@@ -21,11 +21,14 @@ pub fn config(color_opt: ColorOpt) -> Config {
 impl From<ColorOpt> for rustyline::config::ColorMode {
     fn from(c: ColorOpt) -> Self {
         use rustyline::config::ColorMode;
+        #[cfg(feature = "clappy")]
         match c.0 {
             clap::ColorChoice::Always => ColorMode::Forced,
             clap::ColorChoice::Auto => ColorMode::Enabled,
             clap::ColorChoice::Never => ColorMode::Disabled,
         }
+        #[cfg(not(feature = "clappy"))]
+        ColorMode::Enabled
     }
 }
 

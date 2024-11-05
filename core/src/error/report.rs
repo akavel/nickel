@@ -14,7 +14,8 @@ impl From<Vec<Diagnostic<FileId>>> for DiagnosticsWrapper {
 }
 
 /// Available export formats for error diagnostics.
-#[derive(Copy, Clone, Eq, PartialEq, Debug, Default, clap::ValueEnum)]
+#[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
+#[cfg_attr(feature = "clappy", derive(clap::ValueEnum))]
 pub enum ErrorFormat {
     #[default]
     Text,
@@ -23,11 +24,17 @@ pub enum ErrorFormat {
     Toml,
 }
 
+#[cfg(feature = "clappy")]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
 pub struct ColorOpt(pub(crate) clap::ColorChoice);
 
+#[cfg(not(feature = "clappy"))]
+#[derive(Copy, Clone, Debug, PartialEq, Eq, Default)]
+pub struct ColorOpt;
+
 impl ColorOpt {
-    fn for_terminal(self, is_terminal: bool) -> ColorChoice {
+    #[cfg(feature = "clappy")]
+    pub fn for_terminal(self, is_terminal: bool) -> ColorChoice {
         match self.0 {
             clap::ColorChoice::Auto => {
                 if is_terminal {
@@ -40,14 +47,25 @@ impl ColorOpt {
             clap::ColorChoice::Never => ColorChoice::Never,
         }
     }
+
+    #[cfg(not(feature = "clappy"))]
+    pub fn for_terminal(self, is_terminal: bool) -> ColorChoice {
+        if is_terminal {
+            ColorChoice::Auto
+        } else {
+            ColorChoice::Never
+        }
+    }
 }
 
+#[cfg(feature = "clappy")]
 impl From<clap::ColorChoice> for ColorOpt {
     fn from(color_choice: clap::ColorChoice) -> Self {
         Self(color_choice)
     }
 }
 
+#[cfg(feature = "clappy")]
 impl Default for ColorOpt {
     fn default() -> Self {
         Self(clap::ColorChoice::Auto)
