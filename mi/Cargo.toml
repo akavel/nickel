@@ -9,6 +9,9 @@ repository.workspace = true
 homepage.workspace = true
 readme.workspace = true
 
+[features]
+clappy = ["nickel-lang-core/clappy"]
+
 [dependencies]
 nickel-lang-core.workspace = true
 

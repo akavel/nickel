@@ -40,7 +40,8 @@ use crate::{
     typecheck::TypecheckMode,
 };
 
-use codespan_reporting::term::termcolor::{Ansi, ColorChoice, NoColor, WriteColor};
+use colorchoice::ColorChoice;
+use codespan_reporting::term::termcolor::{Ansi, NoColor, WriteColor};
 
 use std::{
     ffi::OsString,
@@ -232,10 +233,7 @@ impl<EC: EvalCache> Program<EC> {
         Ok(Self {
             main_id,
             vm,
-            #[cfg(feature = "clappy")]
-            color_opt: clap::ColorChoice::Auto.into(),
-            #[cfg(not(feature = "clappy"))]
-            color_opt: Default::default(),
+            color_opt: colorchoice::ColorChoice::Auto.into(),
             overrides: Vec::new(),
             field: FieldPath::new(),
         })
@@ -284,10 +282,7 @@ impl<EC: EvalCache> Program<EC> {
         Ok(Self {
             main_id,
             vm,
-            #[cfg(feature = "clappy")]
-            color_opt: clap::ColorChoice::Auto.into(),
-            #[cfg(not(feature = "clappy"))]
-            color_opt: Default::default(),
+            color_opt: colorchoice::ColorChoice::Auto.into(),
             overrides: Vec::new(),
             field: FieldPath::new(),
         })
@@ -582,10 +577,9 @@ impl<EC: EvalCache> Program<EC> {
         let cache = self.vm.import_resolver_mut();
 
         let mut buffer = Vec::new();
-        let color_choice = self.color_opt.for_terminal(true);
         let mut with_color;
         let mut no_color;
-        let writer: &mut dyn WriteColor = if color_choice == ColorChoice::Never {
+        let writer: &mut dyn WriteColor = if self.color_opt.0 == ColorChoice::Never {
             no_color = NoColor::new(&mut buffer);
             &mut no_color
         } else {

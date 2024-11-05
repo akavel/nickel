@@ -24,51 +24,42 @@ pub enum ErrorFormat {
     Toml,
 }
 
-#[cfg(feature = "clappy")]
 #[derive(Copy, Clone, Debug, PartialEq, Eq)]
-pub struct ColorOpt(pub(crate) clap::ColorChoice);
-
-#[cfg(not(feature = "clappy"))]
-#[derive(Copy, Clone, Debug, PartialEq, Eq, Default)]
-pub struct ColorOpt;
+pub struct ColorOpt(pub(crate) colorchoice::ColorChoice);
 
 impl ColorOpt {
-    #[cfg(feature = "clappy")]
     pub fn for_terminal(self, is_terminal: bool) -> ColorChoice {
         match self.0 {
-            clap::ColorChoice::Auto => {
+            colorchoice::ColorChoice::Auto => {
                 if is_terminal {
                     ColorChoice::Auto
                 } else {
                     ColorChoice::Never
                 }
             }
-            clap::ColorChoice::Always => ColorChoice::Always,
-            clap::ColorChoice::Never => ColorChoice::Never,
-        }
-    }
-
-    #[cfg(not(feature = "clappy"))]
-    pub fn for_terminal(self, is_terminal: bool) -> ColorChoice {
-        if is_terminal {
-            ColorChoice::Auto
-        } else {
-            ColorChoice::Never
+            colorchoice::ColorChoice::Always => ColorChoice::Always,
+            colorchoice::ColorChoice::AlwaysAnsi => ColorChoice::AlwaysAnsi,
+            colorchoice::ColorChoice::Never => ColorChoice::Never,
         }
     }
 }
 
 #[cfg(feature = "clappy")]
 impl From<clap::ColorChoice> for ColorOpt {
-    fn from(color_choice: clap::ColorChoice) -> Self {
+    fn from(color: clap::ColorChoice) -> Self {
+        Self(colorchoice_clap::Color { color }.as_choice())
+    }
+}
+
+impl From<colorchoice::ColorChoice> for ColorOpt {
+    fn from(color_choice: colorchoice::ColorChoice) -> Self {
         Self(color_choice)
     }
 }
 
-#[cfg(feature = "clappy")]
 impl Default for ColorOpt {
     fn default() -> Self {
-        Self(clap::ColorChoice::Auto)
+        Self(colorchoice::ColorChoice::Auto)
     }
 }
 
