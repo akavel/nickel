@@ -28,7 +28,7 @@ pub enum ErrorFormat {
 pub struct ColorOpt(pub(crate) colorchoice::ColorChoice);
 
 impl ColorOpt {
-    pub fn for_terminal(self, is_terminal: bool) -> ColorChoice {
+    fn for_terminal(self, is_terminal: bool) -> ColorChoice {
         match self.0 {
             colorchoice::ColorChoice::Auto => {
                 if is_terminal {
