@@ -8,7 +8,6 @@ members = [
     "utils",
     "wasm-repl",
     "pyckel",
-    "mi",
 ]
 resolver = "2"
 
