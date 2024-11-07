@@ -15,7 +15,7 @@ impl From<Vec<Diagnostic<FileId>>> for DiagnosticsWrapper {
 
 /// Available export formats for error diagnostics.
 #[derive(Copy, Clone, Eq, PartialEq, Debug, Default)]
-#[cfg_attr(feature = "clappy", derive(clap::ValueEnum))]
+#[cfg_attr(feature = "clap", derive(clap::ValueEnum))]
 pub enum ErrorFormat {
     #[default]
     Text,
@@ -44,7 +44,7 @@ impl ColorOpt {
     }
 }
 
-#[cfg(feature = "clappy")]
+#[cfg(feature = "clap")]
 impl From<clap::ColorChoice> for ColorOpt {
     fn from(color: clap::ColorChoice) -> Self {
         Self(colorchoice_clap::Color { color }.as_choice())
